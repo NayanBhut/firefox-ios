@@ -1106,7 +1106,33 @@ class BrowserViewController: UIViewController,
         }
 
         dismissModalsIfStartAtHome()
-        addressToolbarContainer.isHidden = state.isCenterSearchBarShowing
+        updateAddressToolbarVisibility(isCenterSearchBarShowing: state.isCenterSearchBarShowing)
+    }
+
+    private func updateAddressToolbarVisibility(isCenterSearchBarShowing: Bool) {
+        let isToolbarAppearing = !isCenterSearchBarShowing && addressToolbarContainer.isHidden
+        guard isToolbarAppearing, !UIAccessibility.isReduceMotionEnabled else {
+            addressToolbarContainer.isHidden = isCenterSearchBarShowing
+            return
+        }
+
+        addressToolbarContainer.alpha = 0
+        addressToolbarContainer.isHidden = false
+
+        UIView.animate(
+            withDuration: HomepageUX.centerSearchBarTapAnimationDuration,
+            delay: 0,
+            options: .curveEaseInOut
+        ) {
+            self.view.layoutIfNeeded()
+        }
+
+        UIView.animate(
+            withDuration: HomepageUX.centerSearchBarSwapFadeDuration,
+            delay: HomepageUX.centerSearchBarTapAnimationDuration - HomepageUX.centerSearchBarSwapFadeDuration
+        ) {
+            self.addressToolbarContainer.alpha = 1
+        }
     }
 
     private func showToastType(toast: ToastType) {
