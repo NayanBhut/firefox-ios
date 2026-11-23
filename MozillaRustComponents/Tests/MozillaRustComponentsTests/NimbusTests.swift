@@ -579,7 +579,7 @@ class NimbusTests: XCTestCase {
         let databasePath = createDatabasePath()
         _ = try Nimbus.create(server: nil, appSettings: appSettings, dbPath: databasePath) as! Nimbus
 
-        let calculatedAttributes = try getCalculatedAttributes(installationDate: Int64(Date().timeIntervalSince1970 * 1000) - (86_400_000 * 5), dbPath: databasePath, locale: "en-CA")
+        let calculatedAttributes = try getCalculatedAttributes(installationDate: Int64(Date().timeIntervalSince1970 * 1000) - (86_400_000 * 5), dbPath: databasePath, locale: "en-US")
 
         XCTAssertEqual(5, calculatedAttributes.daysSinceInstall)
         XCTAssertEqual(0, calculatedAttributes.daysSinceUpdate)
@@ -637,15 +637,15 @@ class NimbusTests: XCTestCase {
         let appSettings = NimbusAppSettings(appName: "test", channel: "nightly")
         let databasePath = createDatabasePath()
         let nimbus = try Nimbus.create(server: nil, appSettings: appSettings, dbPath: databasePath) as! Nimbus
-        
+
         var result = try XCTUnwrap(try Dictionary.parse(jsonString: ArgumentProcessor.evalJexl(nimbus: nimbus, expression: "true")))
         XCTAssertEqual(try XCTUnwrap(result["success"]) as? Bool, true)
         XCTAssertEqual(try XCTUnwrap(result["result"]) as? Bool, true)
-        
+
         result = try XCTUnwrap(try Dictionary.parse(jsonString: ArgumentProcessor.evalJexl(nimbus: nimbus, expression: "\"true\"")))
         XCTAssertEqual(try XCTUnwrap(result["success"]) as? Bool, true)
         XCTAssertEqual(try XCTUnwrap(result["result"]) as? String, "true")
-        
+
         result = try XCTUnwrap(try Dictionary.parse(jsonString: ArgumentProcessor.evalJexl(nimbus: nimbus, expression: "bogus")))
         XCTAssertEqual(try XCTUnwrap(result["success"]) as? Bool, false)
         XCTAssertEqual(try XCTUnwrap(result["error"]) as? String, "EvaluationError: Identifier 'bogus' is undefined")
